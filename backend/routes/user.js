@@ -1,0 +1,20 @@
+const express = require('express')
+const router = express.Router()
+const userController = require('../controller/user')
+
+router.post('/login', userController.login)
+router.post('/register', userController.register) 
+// router.get('/userinfo', userController.getUserInfo) 
+// router.get('/prefetchuser', userController.preFetchUser) 
+// router.get('/getalluser', userController.getAllUser) 
+// router.get('/getuserbysigntime', userController.getUserBySignUpTime) 
+// router.post('/changestatus', userController.changeUserStatus) 
+// router.post('/addfenzu', userController.addNewFenzu)
+// router.post('/modifyuserfenzu', userController.modifyFrienFenzu) 
+// router.post('/delfenzu', userController.deleteFenzu) 
+// router.post('/editfenzu', userController.editFenzu)
+// router.post('/modifyfriendbeizhu', userController.modifyBeizhu) 
+// router.post('/updateUserInfo', userController.updateUserInfo) 
+// router.post('/updateUserPwd', userController.updateUserPwd) 
+
+module.exports = router
