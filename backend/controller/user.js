@@ -2,7 +2,7 @@ const USER=require('./../models/user')
 const login=(req,res)=>{
     let{email,password}=req.body
     USER.findOne({
-     "email":email
+     email:email
     }).then(doc=>{
         if(doc===null){
             return res.json({
@@ -11,20 +11,20 @@ const login=(req,res)=>{
                 msg:'ten dang nhap hoac mat khau khong chinh xac'
             })
         }
-        if(doc.status===1){
-            return res.json({
-              status:1006,
-              data:'',
-              msg:'tai khoan bi khoa'
-            })
-        }
-        if(doc){
-            let pass=md5(password)
-            if(doc.password===pass){
+        // if(doc.status===1){
+        //     return res.json({
+        //       status:1006,
+        //       data:'',
+        //       msg:'tai khoan bi khoa'
+        //     })
+        // }
+        else{
+           // let pass=md5(password)
+           console.log(doc.pass===password)
+            if(doc.pass===password){
                 return res.json({
                     status: 1000,
                     data: doc,
-                    token: token,
                     msg: 'dang nhap thanh cong'
                   })
             }
@@ -55,7 +55,7 @@ const register=(req,res)=>{
     })
   }
   USER.find({
-    email: email
+    email: email,
   }).then(doc => {
     if (doc.length) {
       return res.json({
@@ -63,12 +63,13 @@ const register=(req,res)=>{
         data: '',
         msg: 'ten nguoi dung da duoc dang ki vui long thu lai'
       })
-    } else {
-         const pass = md5(password)
-          USER.create({
+    } 
+    else {
+         //const pass = md5(password)
+            USER.create({
             name: name,
             email:email,
-            pass: pass,
+            pass: password
           }).then(doc2 => {
             console.log(doc2)
             if (doc2['_id']) {
