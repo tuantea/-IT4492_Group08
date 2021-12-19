@@ -1,4 +1,6 @@
 const USER=require('./../models/user')
+const { createToken, parseToken } = require('./../utils/auth')
+const {md5}=require('./../utils/config')
 const login=(req,res)=>{
     let{email,password}=req.body
     USER.findOne({
@@ -19,20 +21,21 @@ const login=(req,res)=>{
         //     })
         // }
         else{
-           // let pass=md5(password)
-           console.log(doc.pass===password)
-            if(doc.pass===password){
+            let pass=md5(password)
+            if(doc.pass===pass){  
+              const userId = doc._id
+              const token = createToken(userId)    
                 return res.json({
                     status: 1000,
                     data: doc,
+                    token:token,
                     msg: 'dang nhap thanh cong'
                   })
             }
             else{
                 return res.json({
                     status: 1001,
-                    data: doc,
-                    token: token,
+                    data: '',
                     msg: 'ten dang nhap hoac mat khau khong chinh xac'
                   })
             }
@@ -65,11 +68,15 @@ const register=(req,res)=>{
       })
     } 
     else {
-         //const pass = md5(password)
+           const pass = md5(password)
             USER.create({
             name: name,
             email:email,
-            pass: password
+            pass: pass,
+            status:0,
+            location:"",
+            bankaccount:"",
+            typebank:""
           }).then(doc2 => {
             console.log(doc2)
             if (doc2['_id']) {
@@ -95,4 +102,79 @@ const register=(req,res)=>{
         })
       })
 }
-module.exports={ login,register}
+const changepassword = async (req, res) => {
+  try {
+    const { oldPwd, newPwd, reNewPwd, userId } = req.body
+    const {pass: userPwd} = await USER.findOne({_id: userId}, {pass: 1})
+    const oldPwdMD5 = md5(oldPwd)
+    const newPwdMD5 = md5(newPwd)
+    if (parseToken(req.headers.authorization) !== userId) {
+      return res.json({
+        status: 2001,
+        data: [],
+        msg: 'thao tac sai！'
+      })
+    }
+    if (userPwd !== oldPwdMD5) {
+      return res.json({
+        status: 2001,
+        data: [],
+        msg: 'mat khau cu khong chinh xac'
+      })
+    }
+    if (newPwd !== reNewPwd) {
+      return res.json({
+        status: 2001,
+        data: [],
+        msg: 'hai mat khau khong nhat quan'
+      })
+    }
+    const data = await USER.findByIdAndUpdate({
+      _id: userId
+    }, {
+      pass: newPwdMD5
+    })
+    return res.json({
+      status: 2000,
+      data: data,
+      msg: 'cap nhat thanh cong'
+    })
+  } catch (error) {
+    return res.json({
+      status: 2003,
+      data: [],
+      msg: 'loi may chu nek'
+    })
+  }
+}
+const updateUserInfo = async (req, res) => {
+  try {
+    const { location, bank,type, userId } = req.body
+    if (parseToken(req.headers.authorization) !== userId) {
+      return res.json({
+        status: 2001,
+        data: [],
+        msg: 'thao tac sai'
+      })
+    }
+    const data = await USER.findByIdAndUpdate({
+      _id: userId
+    }, {
+      location: location,
+      bankaccount:bank,
+      typebank:type
+    })
+    return res.json({
+      status: 2000,
+      data: [],
+      msg: 'thanh cong'
+    })
+  } catch (error) {
+    return res.json({
+      status: 2003,
+      data: error,
+      msg: 'loi may chu'
+    })
+  }
+}
+module.exports={ login,register,changepassword,updateUserInfo}
