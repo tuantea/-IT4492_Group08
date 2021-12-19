@@ -8,6 +8,7 @@ let session = require('express-session')
 let server = require('http').createServer(app)
 const API_VERSION = require('./utils/connectDB').API
 const user = require('./routes/user')
+custom=require('./routes/custom')
 const md5=require('./utils/config')
 const options = {
   setHeaders(res, path, stat) {
@@ -21,6 +22,7 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+app.use(`${API_VERSION}/custom`,custom)
 app.use(`${API_VERSION}/user`, user)
 app.get('/', (req, res) => {
   res.sendfile(__dirname + '/index.html')

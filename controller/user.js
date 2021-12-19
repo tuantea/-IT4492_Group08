@@ -203,4 +203,19 @@ const getUserInfo = (req, res) => {
     })
   })
 }
-module.exports={ login,register,changepassword,updateUserInfo,getUserInfo}
+const getAllUser = (req, res) => {
+  USER.find().then(doc => {
+    return res.json({
+      status: 2000,
+      data: doc,
+      msg: 'thanh cong'
+    })
+  }).catch(err => {
+    return res.json({
+      status: 2003,
+      data: err,
+      msg: 'that bai'
+    })
+  })
+}
+module.exports={ login,register,changepassword,updateUserInfo,getUserInfo,getAllUser}
