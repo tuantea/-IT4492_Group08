@@ -39,7 +39,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 const PORT=process.env.PORT||3000
-server.listen(3000, () => {
+server.listen(PORT, () => {
   console.log('node.js start')
 });
 module.exports = app;
