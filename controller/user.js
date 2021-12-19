@@ -177,4 +177,30 @@ const updateUserInfo = async (req, res) => {
     })
   }
 }
-module.exports={ login,register,changepassword,updateUserInfo}
+const getUserInfo = (req, res) => {
+  const { id } = req.query
+  USER.findById({
+    _id: id
+  }).then(doc => {
+    if (doc) {
+      return res.json({
+        status: 2000,
+        data: doc,
+        msg: 'thanhcong'
+      })
+    } else {
+      return res.json({
+        status: 2001,
+        data: '',
+        msg: 'khong co du lieu'
+      })
+    }
+  }).catch(err => {
+    res.json({
+      status: 2003,
+      data: '',
+      msg: 'loi'
+    })
+  })
+}
+module.exports={ login,register,changepassword,updateUserInfo,getUserInfo}
