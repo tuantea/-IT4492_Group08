@@ -14,7 +14,7 @@ const options = {
     res.set('Access-Control-Allow-Origin', '*')
   }
 }
-app.set('views', path.join(__dirname, 'views'));
+// app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
 app.use(logger('dev'));
@@ -22,12 +22,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(`${API_VERSION}/user`, user)
-app.get('/', (req, res) => {
-  res.sendfile(__dirname + '/index.html')
-})
-app.get('/admin', (req, res) => {
-  res.sendfile(__dirname + '/public/build/index.html')
-})
+// app.get('/', (req, res) => {
+//   res.sendfile(__dirname + '/index.html')
+// })
+// app.get('/admin', (req, res) => {
+//   res.sendfile(__dirname + '/public/build/index.html')
+// })
 
 app.use(function(req, res, next) {
   next(createError(404));
