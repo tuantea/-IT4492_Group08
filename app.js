@@ -38,8 +38,8 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
-
-server.listen(3333, () => {
+const PORT=process.env.PORT||3000
+server.listen(3000, () => {
   console.log('node.js start')
 });
 module.exports = app;
