@@ -16,7 +16,7 @@ const getAllUser = (req, res) => {
   }
 const getUserByPhone = (req, res) => {
     const { phone } = req.body
-    USER.find({
+    USER.findOne({
       telephone:phone
     }).then(doc => {
       if (doc) {
