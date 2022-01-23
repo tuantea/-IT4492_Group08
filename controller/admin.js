@@ -1,6 +1,77 @@
 const USER=require('./../models/user')
+const {md5}=require('./../utils/config')
+const register=(req,res)=>{
+  let {username, password, rePassword,email,phone,role} = req.body
+if (password !== rePassword) {
+  return res.json({
+    status: 401,
+    data: '',
+    msg: 'hai mat khau khong nhat quan'
+  })
+}
+USER.find({
+  $or: [
+    { username : username },
+    { email: email }
+  ]
+}).then(doc => {
+  if (doc.length) {
+    return res.json({
+      status: 401,
+      data: '',
+      msg: 'email da duoc dang ki vui long thu lai'
+    })
+  } 
+  else { 
+    USER.find({
+    telephone: phone,
+  }).then(doc => {
+    if (doc.length) {
+      return res.json({
+        status: 401,
+        data: '',
+        msg: 'so dien thoai da duoc dang ki vui long thu lai'
+      })
+    }
+    else{ 
+         const pass = md5(password)
+          USER.create({
+          username: username,
+          email:email,
+          password: pass,
+          telephone:phone,
+          status:"active",
+          role:role,
+          create_at:Date.now(),
+          update_at:Date.now()
+        }).then(doc2 => {
+          if (doc2) {
+            return res.json({
+              status: 201,
+              data: doc2,
+              msg: 'dang ki thanh cong'
+            })
+          } else {
+            return res.json({
+              status: 401,
+              data: '',
+              msg: 'dang ki khong thanh cong,vui long thu lai'
+            })
+          }
+        })
+      }
+    })
+  }
+    }).catch(err => {
+      res.json({
+        status: 401,
+        data: err,
+        msg: 'lỗi máy chủ'
+      })
+    })
+}
 const getAllUser = (req, res) => {
-    USER.find().then(doc => {
+    USER.find({role:"user"}).then(doc => {
       return res.json({
         status: 200,
         data: doc,
@@ -145,4 +216,4 @@ const active = (req, res) => {
       })
     })
   }
-module.exports={getAllUser,getUserByPhone,getUserById,active,blocked,inactive}
+module.exports={getAllUser,getUserByPhone,getUserById,active,blocked,inactive,register}

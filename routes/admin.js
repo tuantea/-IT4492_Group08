@@ -1,11 +1,11 @@
 const express = require('express')
 const router = express.Router()
 const adminController = require('../controller/admin')
-
+router.post('/register',adminController.register)
 router.get('/phone',adminController.getUserByPhone)
 router.get('/all',adminController.getAllUser)
 router.get('/userbyid',adminController.getUserById)
-router.get('/active',adminController.active)
-router.get('/inactive',adminController.inactive)
-router.get('/blocked',adminController.blocked)
+router.put('/active',adminController.active)
+router.put('/inactive',adminController.inactive)
+router.put('/blocked',adminController.blocked)
 module.exports = router
