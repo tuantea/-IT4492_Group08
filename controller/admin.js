@@ -120,7 +120,7 @@ const active = (req, res) => {
     })
   }
   const inactive = (req, res) => {
-    const { id } = req.query
+    const { id } = req.body
     USER.updateOne(
       { _id: id },
       { $set: { status: 'inactive' }}

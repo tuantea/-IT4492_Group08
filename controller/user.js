@@ -66,7 +66,7 @@ const register=(req,res)=>{
   }
   USER.find({
     $or: [
-      { name : username },
+      { username : username },
       { email: email }
     ]
   }).then(doc => {
@@ -91,7 +91,7 @@ const register=(req,res)=>{
       else{ 
            const pass = md5(password)
             USER.create({
-            name: username,
+            username: username,
             email:email,
             password: pass,
             telephone:phone,
