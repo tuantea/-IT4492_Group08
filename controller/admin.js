@@ -15,7 +15,7 @@ const getAllUser = (req, res) => {
     })
   }
 const getUserByPhone = (req, res) => {
-    const { phone } = req.query
+    const { phone } = req.body
     USER.find({
       telephone:phone
     }).then(doc => {
@@ -41,7 +41,7 @@ const getUserByPhone = (req, res) => {
     })
   }
 const getUserById = (req, res) => {
-    const { id } = req.query
+    const { id } = req.body
     USER.findById({
       _id:id
     }).then(doc => {
