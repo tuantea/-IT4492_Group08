@@ -2,31 +2,38 @@ const USER=require('./../models/user')
 const { createToken, parseToken } = require('./../utils/auth')
 const {md5}=require('./../utils/config')
 const login=(req,res)=>{
-    let{email,password}=req.body
+    let{username,password}=req.body
     USER.findOne({
-     email:email
+         name : username 
     }).then(doc=>{
         if(doc===null){
             return res.json({
-                status:1001,
+                status:401,
                 data:'',
                 msg:'ten dang nhap hoac mat khau khong chinh xac'
             })
         }
-        // if(doc.status===1){
-        //     return res.json({
-        //       status:1006,
-        //       data:'',
-        //       msg:'tai khoan bi khoa'
-        //     })
-        // }
+        if(doc.status==="inactive"){
+            return res.json({
+              status:401,
+              data:'',
+              msg:'tai khoan inactive'
+            })
+        }
+         if (doc.status==="blocked"){
+          return res.json({
+            status:401,
+            data:'',
+            msg:'tai khoan blocked'
+          })
+      }
         else{
             let pass=md5(password)
-            if(doc.pass===pass){  
+            if(doc.password===pass){  
               const userId = doc._id
               const token = createToken(userId)    
                 return res.json({
-                    status: 1000,
+                    status: 200,
                     data: doc,
                     token:token,
                     msg: 'dang nhap thanh cong'
@@ -34,7 +41,7 @@ const login=(req,res)=>{
             }
             else{
                 return res.json({
-                    status: 1001,
+                    status: 401,
                     data: '',
                     msg: 'ten dang nhap hoac mat khau khong chinh xac'
                   })
@@ -42,72 +49,93 @@ const login=(req,res)=>{
         }
         }).catch(err=>{
             return res.json({
-                status:2003,
+                status:401,
                 data:err,
                 msg:'loi may chu'
             })
         })
 }
 const register=(req,res)=>{
-    let {name,email, password, rePassword} = req.body
+    let {username, password, rePassword,email,phone} = req.body
   if (password !== rePassword) {
     return res.json({
-      status: 1004,
+      status: 401,
       data: '',
       msg: 'hai mat khau khong nhat quan'
     })
   }
   USER.find({
-    email: email,
+    $or: [
+      { name : username },
+      { email: email }
+    ]
   }).then(doc => {
     if (doc.length) {
       return res.json({
-        status: 1003,
+        status: 401,
         data: '',
-        msg: 'ten nguoi dung da duoc dang ki vui long thu lai'
+        msg: 'email da duoc dang ki vui long thu lai'
       })
     } 
-    else {
+    else { 
+      USER.find({
+      telephone: phone,
+    }).then(doc => {
+      if (doc.length) {
+        return res.json({
+          status: 401,
+          data: '',
+          msg: 'so dien thoai da duoc dang ki vui long thu lai'
+        })
+      }
+      else{ 
            const pass = md5(password)
             USER.create({
-            name: name,
+            name: username,
             email:email,
-            pass: pass,
-            status:0,
-            location:"",
-            bankaccount:"",
-            typebank:""
+            password: pass,
+            telephone:phone,
+            status:"active",
+            create_at:Date.now(),
+            update_at:Date.now()
           }).then(doc2 => {
-            console.log(doc2)
-            if (doc2['_id']) {
+            if (doc2) {
               return res.json({
-                status: 1005,
+                status: 201,
                 data: doc2,
                 msg: 'dang ki thanh cong'
               })
             } else {
               return res.json({
-                status: 1004,
+                status: 401,
                 data: '',
                 msg: 'dang ki khong thanh cong,vui long thu lai'
               })
             }
           })
         }
+      })
+    }
       }).catch(err => {
         res.json({
-          status: 2003,
+          status: 401,
           data: err,
           msg: 'lỗi máy chủ'
         })
       })
 }
+// const active(req,res)=>{
+
+// }
 const changepassword = async (req, res) => {
   try {
     const { oldPwd, newPwd, reNewPwd, userId } = req.body
-    const {pass: userPwd} = await USER.findOne({_id: userId}, {pass: 1})
+    const {password: userPwd} = await USER.findOne({_id: userId}, {pass: 1})
     const oldPwdMD5 = md5(oldPwd)
     const newPwdMD5 = md5(newPwd)
+    console.log(req.headers.authorization)
+    console.log(userId)
+    console.log(userId===parseToken(req.headers.authorization))
     if (parseToken(req.headers.authorization) !== userId) {
       return res.json({
         status: 2001,
@@ -149,48 +177,46 @@ const changepassword = async (req, res) => {
 }
 const updateUserInfo = async (req, res) => {
   try {
-    const { location, bank,type, userId } = req.body
-    if (parseToken(req.headers.authorization) !== userId) {
-      return res.json({
-        status: 2001,
-        data: [],
-        msg: 'thao tac sai'
-      })
-    }
-    const data = await USER.findByIdAndUpdate({
-      _id: userId
+    const { name,gender,address,birthday,phone,email} = req.body
+    USER.findOneAndUpdate({
+      _id: parseToken(req.headers.authorization)
     }, {
-      location: location,
-      bankaccount:bank,
-      typebank:type
-    })
+      name: name,
+      gender:gender,
+      address:address,
+      birthday:birthday,
+      telephone:phone,
+      email:email,
+      update_at:Date.now()
+    }).then(data=>{
     return res.json({
-      status: 2000,
-      data: [],
+      status: 200,
+      data: data,
       msg: 'thanh cong'
     })
+  })
   } catch (error) {
     return res.json({
-      status: 2003,
+      status: 401,
       data: error,
       msg: 'loi may chu'
     })
   }
 }
 const getUserInfo = (req, res) => {
-  const { id } = req.query
+  const  id  = parseToken(req.headers.authorization)
   USER.findById({
     _id: id
   }).then(doc => {
     if (doc) {
       return res.json({
-        status: 2000,
+        status: 200,
         data: doc,
         msg: 'thanhcong'
       })
     } else {
       return res.json({
-        status: 2001,
+        status: 401,
         data: '',
         msg: 'khong co du lieu'
       })
@@ -203,19 +229,19 @@ const getUserInfo = (req, res) => {
     })
   })
 }
-const getAllUser = (req, res) => {
-  USER.find().then(doc => {
+
+const deleteUser=(req,res)=>{
+  USER.deleteOne({_id:parseToken(req.headers.authorization)}).
+  then(doc=>{
     return res.json({
-      status: 2000,
-      data: doc,
-      msg: 'thanh cong'
+      status:200,
+      msg:"Xoa tai khoan"
     })
-  }).catch(err => {
+  }).catch(err=>{
     return res.json({
-      status: 2003,
-      data: err,
-      msg: 'that bai'
+      status:401,
+     msg:"loi may chu"
     })
   })
 }
-module.exports={ login,register,changepassword,updateUserInfo,getUserInfo,getAllUser}
+module.exports={ login,register,changepassword,updateUserInfo,getUserInfo,deleteUser}

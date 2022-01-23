@@ -9,6 +9,7 @@ let server = require('http').createServer(app)
 const API_VERSION = require('./utils/connectDB').API
 const user = require('./routes/user')
 custom=require('./routes/custom')
+admin=require('./routes/admin')
 const md5=require('./utils/config')
 const options = {
   setHeaders(res, path, stat) {
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(`${API_VERSION}/custom`,custom)
 app.use(`${API_VERSION}/user`, user)
+app.use(`${API_VERSION}/admin`, admin)
 app.get('/', (req, res) => {
   res.sendfile(__dirname + '/index.html')
 })
