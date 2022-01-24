@@ -4,6 +4,7 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var app = express();
+var cors = require('cors')
 let session = require('express-session')
 let server = require('http').createServer(app)
 const API_VERSION = require('./utils/connectDB').API
@@ -16,6 +17,7 @@ const options = {
     res.set('Access-Control-Allow-Origin', '*')
   }
 }
+app.use(cors())
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 
