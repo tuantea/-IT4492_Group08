@@ -4,7 +4,7 @@ const {md5}=require('./../utils/config')
 const login=(req,res)=>{
     let{username,password}=req.body
     USER.findOne({
-         name : username 
+         username : username 
     }).then(doc=>{
         if(doc===null){
             return res.json({
