@@ -114,7 +114,7 @@ const getUserByPhone = (req, res) => {
     })
   }
 const getUserById = (req, res) => {
-    const { id } = req.body
+    const { id } = req.query
     USER.findById({
       _id:id
     }).then(doc => {
@@ -140,7 +140,7 @@ const getUserById = (req, res) => {
     })
   }
 const active = (req, res) => {
-    const { id } = req.body
+    const { id } = req.query
     USER.updateOne(
       { _id: id },
       { $set: { status: 'active' }}
@@ -166,7 +166,7 @@ const active = (req, res) => {
     })
   }
   const blocked = (req, res) => {
-    const { id } = req.body
+    const { id } = req.query
     console.log(id)
     USER.findByIdAndUpdate(
       { _id: id },
@@ -193,7 +193,7 @@ const active = (req, res) => {
     })
   }
   const inactive = (req, res) => {
-    const { id } = req.body
+    const { id } = req.query
     USER.updateOne(
       { _id: id },
       { $set: { status: 'inactive' }}
