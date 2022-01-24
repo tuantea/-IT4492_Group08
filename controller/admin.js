@@ -42,6 +42,8 @@ USER.find({
           telephone:phone,
           status:"active",
           role:role,
+          address:"",
+          birthday:"",
           create_at:Date.now(),
           update_at:Date.now()
         }).then(doc2 => {

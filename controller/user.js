@@ -97,6 +97,8 @@ const register=(req,res)=>{
             telephone:phone,
             status:"active",
             role:"user",
+            address:"",
+            birthday:"",
             create_at:Date.now(),
             update_at:Date.now()
           }).then(doc2 => {
@@ -178,9 +180,9 @@ const changepassword = async (req, res) => {
 }
 const updateUserInfo = async (req, res) => {
   try {
-    const { name,gender,address,birthday,phone,email} = req.body
+    const { name,gender,address,birthday,phone,email,userId} = req.body
     USER.findOneAndUpdate({
-      _id: parseToken(req.headers.authorization)
+      _id: userId
     }, {
       name: name,
       gender:gender,
@@ -232,7 +234,8 @@ const getUserInfo = (req, res) => {
 }
 
 const deleteUser=(req,res)=>{
-  USER.deleteOne({_id:parseToken(req.headers.authorization)}).
+  const {id}=req.body
+  USER.deleteOne({_id:id}).
   then(doc=>{
     return res.json({
       status:200,
