@@ -4,8 +4,8 @@ const autoIncrement= require('mongoose-auto-increment')
 const userSchema=new Schema({
     name:String,
     gender:{type:String,default:''},
-    address:{String,default:''},
-    birthday:{Date,default:''},
+    address:{type:String,default:''},
+    birthday:{type:Date,default:''},
     telephone:{type:String,unique:true},
     username:{type:String,unique:true},
     email:{type:String,unique:true},
