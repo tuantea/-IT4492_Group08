@@ -207,7 +207,7 @@ const updateUserInfo = async (req, res) => {
   }
 }
 const getUserInfo = (req, res) => {
-  const  id  = parseToken(req.headers.authorization)
+  const { id }  = req.body
   USER.findById({
     _id: id
   }).then(doc => {
