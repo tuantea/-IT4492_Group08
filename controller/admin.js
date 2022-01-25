@@ -73,7 +73,7 @@ USER.find({
     })
 }
 const getAllUser = (req, res) => {
-    USER.find({role:"user"}).then(doc => {
+    USER.find().then(doc => {
       return res.json({
         status: 200,
         data: doc,
